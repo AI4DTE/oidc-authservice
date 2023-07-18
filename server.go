@@ -66,6 +66,7 @@ type server struct {
 	userIdTransformer      common.UserIDTransformer
 	caBundle               []byte
 	sessionSameSite        http.SameSite
+	sessionDomain          string
 }
 
 // authenticate_or_login calls initiates the Authorization Code Flow if the user
@@ -308,7 +309,7 @@ func (s *server) authCodeFlowAuthenticationRequest(w http.ResponseWriter, r *htt
 	logger := common.RequestLogger(r, logModuleInfo)
 
 	// Initiate OIDC Flow with Authorization Request.
-	state, err := sessions.CreateState(r, w, s.oidcStateStore)
+	state, err := sessions.CreateState(r, w, s.oidcStateStore, s.sessionDomain)
 	if err != nil {
 		logger.Errorf("Failed to save state in store: %v", err)
 		common.ReturnMessage(w, http.StatusInternalServerError, "Failed to save state in store.")
@@ -398,6 +399,7 @@ func (s *server) callback(w http.ResponseWriter, r *http.Request) {
 	session := sessions.NewSession(s.store, sessions.UserSessionCookie)
 	session.Options.MaxAge = s.sessionMaxAgeSeconds
 	session.Options.Path = "/"
+	session.Options.Domain = s.sessionDomain
 	// Extra layer of CSRF protection
 	session.Options.SameSite = s.sessionSameSite
 

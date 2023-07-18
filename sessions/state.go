@@ -8,6 +8,8 @@ import (
 	"net/url"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/gorilla/sessions"
 	"github.com/pkg/errors"
 )
@@ -38,7 +40,7 @@ func newState(firstVisitedURL string) *State {
 // It returns the session key, which can be used as the state value to start
 // an OIDC authentication request.
 func CreateState(r *http.Request, w http.ResponseWriter,
-	store sessions.Store) (string, error) {
+	store sessions.Store, sessionDomain string) (string, error) {
 
 	firstVisitedURL, err := url.Parse("")
 	if err != nil {
@@ -47,10 +49,16 @@ func CreateState(r *http.Request, w http.ResponseWriter,
 	firstVisitedURL.Path = r.URL.Path
 	firstVisitedURL.RawPath = r.URL.RawPath
 	firstVisitedURL.RawQuery = r.URL.RawQuery
+	firstVisitedURL.Host = r.Header.Get("X-Forwarded-Host")
+	firstVisitedURL.Fragment = r.URL.Fragment
+	firstVisitedURL.OmitHost = false
+	log.WithField("firstVisitedURL", firstVisitedURL).WithField("r", r).
+		Info("Storing firstVisitedURL")
 	s := newState(firstVisitedURL.String())
 	session := sessions.NewSession(store, oidcStateCookie)
 	session.Options.MaxAge = int(20 * time.Minute)
 	session.Options.Path = "/"
+	session.Options.Domain = sessionDomain
 	session.Values[sessionValueState] = *s
 
 	err = session.Save(r, w)
@@ -70,10 +78,10 @@ func CreateState(r *http.Request, w http.ResponseWriter,
 
 // VerifyState gets the state from the cookie 'initState' saved. It also gets
 // the state from an http param and:
-// 1. Confirms the two values match (CSRF check).
-// 2. Confirms the value is still valid by retrieving the session it points to.
-//    The state value might be invalid if it has been used before or the session
-//    expired.
+//  1. Confirms the two values match (CSRF check).
+//  2. Confirms the value is still valid by retrieving the session it points to.
+//     The state value might be invalid if it has been used before or the session
+//     expired.
 //
 // Finally, it returns a State struct, which contains information associated
 // with the particular OIDC flow.
