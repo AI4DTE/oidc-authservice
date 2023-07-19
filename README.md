@@ -6,6 +6,8 @@ An AuthService is an HTTP Server that an API Gateway (eg Ambassador, Envoy) asks
 
 For more information, see [this article](https://journal.arrikto.com/kubeflow-authentication-with-istio-dex-5eafdfac4782).
 
+To build the Docker image: `make docker-build docker-push`. This will push to the AI4DTE registry.
+
 ## OpenID Connect
 
 [OpenID Connect (OIDC)](http://openid.net/connect/) is an authentication layer on top of the OAuth 2.0 protocol. As OAuth 2.0 is fully supported by OpenID Connect, existing OAuth 2.0 implementations work with it out of the box.

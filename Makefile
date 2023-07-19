@@ -7,7 +7,7 @@ else
 GIT_VERSION := $(shell git describe --tags --long --always)-dirty-$(shell git diff | shasum -a256 | cut -c -6)
 endif
 
-IMG ?= gcr.io/arrikto-playground/kubeflow/oidc-authservice
+IMG ?= 664548925309.dkr.ecr.eu-north-1.amazonaws.com/oidc-authservice
 TAG ?= $(GIT_VERSION)
 
 .EXPORT_ALL_VARIABLES:
