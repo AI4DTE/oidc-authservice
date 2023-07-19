@@ -64,8 +64,11 @@ func (s *AIPIPEAPIKeyAuthenticator) AuthenticateRequest(r *http.Request) (*authe
 	// Check the result. 401 is an authN failure, 200 is success and anything else is an error.
 	if resp.StatusCode == 401 {
 		// Authentication failed.
+		// We have to return this as an 'authenticator specific error' so that the user isn't
+		// redirected to the OIDC endpoint. That's a UI and not appropriate for an API-based
+		// authentication method.
 		logger.Debug("API key-based auth failed")
-		return nil, false, nil
+		return nil, false, &common.AuthenticatorSpecificError{Err: errors.New("API key invalid")}
 	}
 
 	if resp.StatusCode == 200 {

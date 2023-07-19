@@ -231,6 +231,7 @@ func main() {
 		KubernetesAuthnEnabled:  c.KubernetesAuthnEnabled,
 		AccessTokenAuthnEnabled: c.AccessTokenAuthnEnabled,
 		AccessTokenAuthn:        c.AccessTokenAuthn,
+		APIKeyAuthNURL:          c.APIKeyAuthNURL,
 		authHeader:              c.AuthHeader,
 		caBundle:                caBundle,
 		authenticators: []authenticators.AuthenticatorRequest{

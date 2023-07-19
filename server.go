@@ -60,6 +60,7 @@ type server struct {
 	KubernetesAuthnEnabled  bool
 	AccessTokenAuthnEnabled bool
 	AccessTokenAuthn        string
+	APIKeyAuthNURL          string
 
 	authHeader             string
 	idTokenOpts            common.JWTClaimOpts
@@ -462,6 +463,9 @@ func (s *server) enabledAuthenticator(authenticator string) bool {
 		return true
 	}
 	if authenticator == "idtoken authenticator" && s.IDTokenAuthnEnabled {
+		return true
+	}
+	if authenticator == "API key authenticator" && s.APIKeyAuthNURL != "" {
 		return true
 	}
 	return false
