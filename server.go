@@ -27,11 +27,12 @@ const (
 var (
 	SessionLogoutPath     = "/logout"
 	authenticatorsMapping = []string{
-		0: "kubernetes authenticator",
-		1: "opaque access token authenticator",
-		2: "JWT access token authenticator",
-		3: "session authenticator",
-		4: "idtoken authenticator",
+		0: "API key authenticator",
+		1: "kubernetes authenticator",
+		2: "opaque access token authenticator",
+		3: "JWT access token authenticator",
+		4: "session authenticator",
+		5: "idtoken authenticator",
 	}
 )
 
