@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-
+	"strings"
 	"github.com/arrikto/oidc-authservice/common"
 	"github.com/pkg/errors"
 	"k8s.io/apiserver/pkg/authentication/authenticator"
@@ -35,6 +35,14 @@ func (s *AIPIPEAPIKeyAuthenticator) AuthenticateRequest(r *http.Request) (*authe
 	if len(basic_auth_value) == 0 {
 		logger.Debug("No basic auth found")
 		return nil, false, nil
+	}
+
+	logger.Infof("Basic Auth Value: %s", basic_auth_value)
+
+	// Check if the auth header value starts with 'Basic '
+	if !strings.HasPrefix(basic_auth_value, "Basic ") {
+		logger.Debug("Auth header provided is not Basic Auth")
+		return nil, false, &common.AuthenticatorSpecificError{Err: errors.New("Invalid Auth Header")}
 	}
 
 	// Build a request to the service manager, copying the header value.
