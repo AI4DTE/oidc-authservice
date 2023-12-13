@@ -37,7 +37,7 @@ func (s *AIPIPEAPIKeyAuthenticator) AuthenticateRequest(r *http.Request) (*authe
 		return nil, false, nil
 	}
 
-	logger.Infof("Basic Auth Value: %s", basic_auth_value)
+	logger.Infof("Basic Auth Value: %s, AuthNURL: %s", basic_auth_value, s.AuthNURL)
 
 	// Check if the auth header value starts with 'Basic '
 	if !strings.HasPrefix(basic_auth_value, "Basic ") {
